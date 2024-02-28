@@ -1,0 +1,27 @@
+#include<iostream>
+using namespace std;
+
+int main(){
+    int track[10],n,i,init,endt,res=0;
+    cout<<"Enter number of tracks to be visited :";
+    cin>>n;
+    for(i=0;i<n;i++){
+        cout<<"Enter track to be visited in order "<<i+1<<": ";
+        cin>>track[i];
+    }
+    cout<<"Enter initial track :";
+    cin>>init;
+    cout<<"Enter the track limit :";
+    cin>>endt;
+    for(i=0;i<n;i++){
+        if(init>track[i]){
+            res+=(init-track[i]);
+            init=track[i];
+        }
+        else{
+            res+=(track[i]-init);
+            init=track[i];
+        }
+    }
+    cout<<"The total disk movements is "<<res<<" tracks";
+}
