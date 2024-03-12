@@ -1,0 +1,33 @@
+#include<iostream>
+using namespace std;
+
+int main(){
+    int count=0,choice;
+
+    cout<<"Menu\n1 for Producer\n2 for consumer\n3 to exit"<<endl;
+    do{
+    cout<<"Enter your choice :";
+    cin>>choice;
+    switch(choice){
+        case 1:
+            cout<<"Producer produced an item"<<endl;
+            count++;
+            cout<<"Total number of items in buffer ="<<count<<endl;
+            break;
+        case 2:
+            if(count==0)
+                cout<<"Buffer is empty"<<endl;
+            else{
+                cout<<"Consumer consumed an item"<<endl;
+                count--;
+                cout<<"Total number of items left in buffer="<<count<<endl;
+            }
+            break;
+        case 3:
+            cout<<"Exiting"<<endl;
+            break;
+        default:
+            cout<<"Error!!!"<<endl;
+    }
+    }while(choice!=3);
+}
