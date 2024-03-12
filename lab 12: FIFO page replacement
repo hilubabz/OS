@@ -5,8 +5,9 @@ int main(){
     int count=0,i,hit=0,check;
     int input[]={7,0,1,2,0,3,0,4,2,3,0,3,1,2,0};
     int page[3]={-1,-1,-1};
+    int len=sizeof(input)/sizeof(int);
     cout<<"String\tFrame 1\tFrame 2\tFrame 3\tresult"<<endl;
-    for(i=0;i<15;i++){
+    for(i=0;i<len;i++){
         check=0;
         if(page[0]==input[i]||page[1]==input[i]||page[2]==input[i]){
             hit++;
