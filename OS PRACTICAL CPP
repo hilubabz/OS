@@ -1,0 +1,326 @@
+1.	FCFS
+#include<iostream>
+using namespace std;
+int main(){
+    int bt[10],i,n,wt[10],tt[10];
+    float aw=0,at=0;
+    cout<<"Enter number of processes :";
+    cin>>n;
+        cout<<"Enter the burst time of process "<<endl;
+    for(i=0;i<n;i++){
+        cout<<"P"<<i+1<<":";
+        cin>>bt[i];
+    }
+    wt[0]=0;
+    cout<<"Process\t\tBurst Time\t\tWaiting Time\tTurn Around Time"<<endl;
+    for(i=0;i<n;i++){
+        tt[i]=wt[i]+bt[i];
+        cout<<"P"<<i+1<<"\t\t\t"<<bt[i]<<"\t\t\t"<<wt[i]<<"\t\t"<<tt[i]<<endl;
+        wt[i+1]=wt[i]+bt[i];
+    }
+    
+    for(i=0;i<n;i++){
+        aw=aw+wt[i];
+        at=at+tt[i];
+    }
+        aw=aw/n;
+        at=at/n;
+        cout<<"Average waiting time="<<aw<<endl;
+        cout<<"Average turn around time="<<at<<endl;
+    return 0;
+}
+
+2.	Dining Philosopher
+#include<iostream>
+
+using namespace std;
+
+bool wait(int a){
+    if(a!=0){
+        return true;
+    }
+    else
+        return false;
+}
+
+int main(){
+    int n,chopstick[10],count=0,i,check[10],phil[10];
+    cout<<"Enter the total number of philosophers :";
+    cin>>n;
+    for(i=0;i<n;i++){
+        chopstick[i]=1;
+        check[i]=0;
+        phil[i]=0;
+    }
+    
+    while(count<n){
+        for(i=0;i<n;i++){
+            if(check[i]==1){
+                cout<<"Philosopher "<<i+1<<" has finished eating "<<endl;
+                check[i]=0;
+                phil[i]=1;
+                chopstick[i]++;
+                chopstick[(i+1)%n]++;
+                count++;
+            }
+            if(phil[i]==0){
+            
+            if(wait(chopstick[i])&&wait(chopstick[(i+1)%n])){
+                chopstick[i]--;
+                chopstick[(i+1)%n]--;
+                cout<<"Philosopher "<<i+1<<" is eating"<<endl;
+                check[i]=1;
+            }
+            else{
+                cout<<"Philosopher "<<i+1<<" is waiting"<<endl;
+            }
+        }
+        }
+    }
+}
+
+3.	Producer Consumer
+#include<iostream>
+using namespace std;
+
+int main(){
+    int count=0,choice;
+
+    cout<<"Menu\n1 for Producer\n2 for consumer\n3 to exit"<<endl;
+    do{
+    cout<<"Enter your choice :";
+    cin>>choice;
+    switch(choice){
+        case 1:
+            cout<<"Producer produced an item"<<endl;
+            count++;
+            cout<<"Total number of items in buffer ="<<count<<endl;
+            break;
+        case 2:
+            if(count==0)
+                cout<<"Buffer is empty"<<endl;
+            else{
+                cout<<"Consumer consumed an item"<<endl;
+                count--;
+                cout<<"Total number of items left in buffer="<<count<<endl;
+            }
+            break;
+        case 3:
+            cout<<"Exiting"<<endl;
+            break;
+        default:
+            cout<<"Error!!!"<<endl;
+    }
+    }while(choice!=3);
+}
+
+4.	Shortest Job First
+#include<iostream>
+using namespace std;
+
+int main() {
+    int at[10], bt[10], i, n, t = 0, count = 0, att[10], btt[10], process[10], j = 0, tat[10], wt[10], bt2[10];
+    float avgtat = 0, avgwt = 0;
+
+    cout << "Enter number of processes";
+    cin >> n;
+    cout << "Enter the arrival time and burst time:" << endl;
+    for (i = 0; i < n; i++) {
+        cout << "P" << i + 1 << ":";
+        cin >> at[i] >> bt[i];
+        bt2[i]=bt[i];
+    }
+
+    cout << "Process\t Arrival_Time\tBurst_Time\tTurn_Around_Time\tWaiting_Time" << endl;
+    while (count < n) {
+        int count1 = 0;
+
+        for (i = 0; i < n; i++) {
+            if (at[i] <= t && bt[i] != 0) {
+                att[count1] = at[i];
+                btt[count1] = bt2[i];
+                
+                process[count1] = i + 1;
+                count1++;
+            }
+        }
+
+        for (i = 0; i < count1 - 1; i++) {
+            for (j = i + 1; j < count1; j++) {
+                int temp;
+                if (btt[i] > btt[j]) {
+                    
+                    temp = btt[i];
+                    btt[i] = btt[j];
+                    btt[j] = temp;
+
+                    temp = att[i];
+                    att[i] = att[j];
+                    att[j] = temp;
+
+                    temp = process[i];
+                    process[i] = process[j];
+                    process[j] = temp;
+                }
+            }
+        }
+
+        t++;
+        bt[process[0] - 1]--;
+
+        if (bt[process[0] - 1] == 0) {
+            tat[process[0] - 1] = t - att[0];
+            wt[process[0] - 1] = tat[process[0] - 1] - btt[0];
+            avgtat += tat[process[0] - 1];
+            avgwt += wt[process[0] - 1];
+            cout <<"P"<< process[0] << "\t\t" << att[0] << "\t\t" << btt[0] << "\t\t" << tat[process[0] - 1] << "\t\t\t" << wt[process[0] - 1] << endl;
+            count++;
+        }
+    }
+
+    avgtat = avgtat / n;
+    avgwt = avgwt / n;
+    cout << "Average turn around time =" << avgtat << endl;
+    cout << "Average waiting time =" << avgwt << endl;
+
+    return 0;
+}
+
+5.	Worst Fit
+#include <iostream>
+using namespace std;
+
+int main() {
+    int i, j, block[10], process[10], n1, n2, diff[10], count = 0, mem[10];
+    cout << "Enter the number of memory blocks: ";
+    cin >> n1;
+    for (i = 0; i < n1; i++) {
+        cout << "Enter memory block " << i + 1 << ": ";
+        cin >> block[i];
+    }
+    cout << "Enter the number of processes: ";
+    cin >> n2;
+    for (i = 0; i < n2; i++) {
+        cout << "Enter the memory required by process " << i + 1 << ": ";
+        cin >> process[i];
+    }
+    cout << "Process\tProcess Size\tMemory Block" << endl;
+    for (i = 0; i < n2; i++) {
+        count = 0;
+        for (j = 0; j < n1; j++) {
+            if (process[i] <= block[j]) {
+                diff[count] = block[j] - process[i];
+                mem[count] = j ; 
+                count++;
+            }
+        }
+        if (count == 0) {
+            cout << i + 1 << "\t\t" << process[i] << "\t\t" << "Not allocated" << endl;
+        } else if (count == 1) {
+            block[mem[0]] -= process[i];
+            cout << i + 1 << "\t\t" << process[i] << "\t\t" << mem[0]+1 << endl;
+        } else {
+            for (j = 0; j < count - 1; j++) {
+                for (int k = j + 1; k < count; k++) { 
+                    if (diff[j] <   diff[k]) { 
+                        swap(diff[j], diff[k]);
+                        swap(mem[j], mem[k]); 
+                    }
+                }
+            }
+            block[mem[0]] -= process[i];
+            cout << i + 1 << "\t\t" << process[i] << "\t\t" << mem[0]+1 << endl;
+        }
+    }
+    return 0;
+}
+
+6.	Optimal Page Replacement
+#include <iostream>
+using namespace std;
+
+int main() {
+    int page[3] = {-1, -1, -1};
+    int hit = 0;
+
+    int input[] = {7, 0, 1, 2, 0, 3,4,2,3,0,3,2,1,2,0,1,7,0,1};
+    int len=sizeof(input)/sizeof(int);
+    cout << "String\tFrame 1\tFrame 2\tFrame 3\tResult" << endl;
+
+    for (int i = 0; i < len; i++) {
+        bool found = false;
+
+        for (int j = 0; j < 3; j++) {
+            if (page[j] == input[i]) {
+                hit++;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            int farthest = -1;
+            int index = -1;
+            for (int j = 0; j < 3; j++) {
+                int nextIndex = 0;
+                for (int k = i + 1; k < len; k++) {
+                    if (input[k] == page[j]) {
+                        nextIndex = k;
+                        break;
+                    }
+                }
+                if (nextIndex > farthest) {
+                    farthest = nextIndex;
+                    index = j;
+                }
+                if (nextIndex == 0){
+                    index=j;
+                    break;
+                }
+            }
+
+            page[index] = input[i];
+        }
+
+        
+        cout << input[i] << "\t\t" << page[0] << "\t\t" << page[1] << "\t\t" << page[2];
+        if (found)
+            cout << "\t\tHit" << endl;
+        else
+            cout << "\t\tMiss" << endl;
+    }
+
+
+    cout << "The total number of page hits is " << hit << endl;
+
+    return 0;
+}
+
+7.	FCFS Disk Scheduling
+#include<iostream>
+using namespace std;
+
+int main(){
+    int track[10],n,i,init,endt,res=0;
+    cout<<"Enter number of tracks to be visited :";
+    cin>>n;
+    for(i=0;i<n;i++){
+        cout<<"Enter track to be visited in order "<<i+1<<": ";
+        cin>>track[i];
+    }
+    cout<<"Enter initial track :";
+    cin>>init;
+    cout<<"Enter the track limit :";
+    cin>>endt;
+    for(i=0;i<n;i++){
+        if(init>track[i]){
+            res+=(init-track[i]);
+            init=track[i];
+        }
+        else{
+            res+=(track[i]-init);
+            init=track[i];
+        }
+    }
+    cout<<"The total disk movements is "<<res<<" tracks";
+}
