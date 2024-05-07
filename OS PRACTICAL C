@@ -1,0 +1,382 @@
+1.	FCFS
+#include<stdio.h>
+int main()
+{
+	int n,bt[20],wt[20],tat[20],avwt=0,avtat=0,i,j;
+	printf("Enter total no.of processes:");
+	scanf("%d",&n);
+	printf("\n Enter burst time of processes:\n");
+	for(i=0;i<n;i++)
+	{
+		printf("\n P[%d]:",i+1);
+		scanf("%d",&bt[i]);
+		
+	}
+	wt[0]=0;
+	for(i=1;i<n;i++)
+	{
+		wt[i]=0;
+		for(j=0;j<i;j++)
+		wt[i]+=bt[j];
+	}
+	printf("\n Processes \t Burst time \t Waiting time\t Turn around time");
+	for(i=0;i<n;i++)
+	{
+		tat[i]=bt[i]+wt[i];
+		avwt+=wt[i];
+		avtat+=tat[i];
+		printf("\n P[%d]\t \t %d\t\t %d\t\t\t %d\t",i+1,bt[i],wt[i],tat[i]);
+		
+	}
+	avwt/=i;
+	avtat/=i;
+	printf("\nAVerage waiting time :%d",avwt);
+	printf("\nAverage turn around time:%d",avtat);
+	return 0;
+	
+}
+
+2.	Dining Philosopher
+#include <stdio.h>
+
+int wait(int a)
+{
+    if (a != 0)
+    {
+        return 1;
+    }
+    else
+        return 0;
+}
+
+int main()
+{
+    int n, chopstick[10], count = 0, i, check[10], phil[10];
+    printf("Enter the total number of philosophers: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++)
+    {
+        chopstick[i] = 1;
+        check[i] = 0;
+        phil[i] = 0;
+    }
+
+    while (count < n)
+    {
+        for (i = 0; i < n; i++)
+        {
+            if (check[i] == 1)
+            {
+                printf("Philosopher %d has finished eating \n", i + 1);
+                check[i] = 0;
+                phil[i] = 1;
+                chopstick[i]++;
+                chopstick[(i + 1) % n]++;
+                count++;
+            }
+            if (phil[i] == 0)
+            {
+
+                if (wait(chopstick[i]) && wait(chopstick[(i + 1) % n]))
+                {
+                    chopstick[i]--;
+                    chopstick[(i + 1) % n]--;
+                    printf("Philosopher %d is eating\n", i + 1);
+                    check[i] = 1;
+                }
+                else
+                {
+                    printf("Philosopher %d is waiting\n", i + 1);
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+3.	Producer Consumer
+#include <stdio.h>
+#include <stdlib.h>
+
+int mutex = 1, full = 0, empty = 5, x = 0;
+
+int wait(int s);
+int signal(int s);
+void producer();
+void consumer();
+
+int main()
+{
+    int n;
+    printf("1.Producer\n2.Consumer\n3.Exit");
+    while (1)
+    {
+        printf("\nEnter your choice:");
+        scanf("%d", &n);
+        switch (n)
+        {
+        case 1:
+            if ((mutex == 1) && (empty != 0))
+                producer();
+            else
+                printf("Producer can't produce!!");
+            break;
+        case 2:
+            if ((mutex == 1) && (full != 0))
+                consumer();
+            else
+                printf("Consumer can't consume!!");
+            break;
+        case 3:
+            exit(0);
+            break;
+        default:
+            printf("Please enter valid choice");
+        }
+    }
+    return 0;
+}
+
+int wait(int s)
+{
+    return (--s);
+}
+
+int signal(int s)
+{
+    return (++s);
+}
+
+void producer()
+{
+    mutex = wait(mutex);
+    full = signal(full);
+    empty = wait(empty);
+    x++;
+    printf("Producer produces the item %d\n", x);
+    mutex = signal(mutex);
+}
+
+void consumer()
+{
+    mutex = wait(mutex);
+    full = wait(full);
+    empty = signal(empty);
+    printf("Consumer consumes item %d\n", x);
+    x--;
+    mutex = signal(mutex);
+}
+
+4.	Shortest Job First
+#include <stdio.h>
+
+void sjf(int n, int bt[], int p[])
+{
+    int wt[n], tat[n], total_wt = 0, total_tat = 0, pos, temp;
+
+    // Sort burst time in ascending order using selection sort
+    for (int i = 0; i < n; i++)
+    {
+        pos = i;
+        for (int j = i + 1; j < n; j++)
+        {
+            if (bt[j] < bt[pos])
+            {
+                pos = j;
+            }
+        }
+        // Swap bt[pos] and bt[i]
+        temp = bt[i];
+        bt[i] = bt[pos];
+        bt[pos] = temp;
+
+        // Swap p[pos] and p[i]
+        temp = p[i];
+        p[i] = p[pos];
+        p[pos] = temp;
+    }
+
+    // Calculate waiting time
+    wt[0] = 0;
+    for (int i = 1; i < n; i++)
+    {
+        wt[i] = bt[i - 1] + wt[i - 1];
+        total_wt += wt[i];
+    }
+
+    // Calculate turnaround time
+    for (int i = 0; i < n; i++)
+    {
+        tat[i] = bt[i] + wt[i];
+        total_tat += tat[i];
+    }
+
+    // Print the results
+    printf("Process\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d\t%d\t\t%d\t\t%d\n", p[i], bt[i], wt[i], tat[i]);
+    }
+    printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", (float)total_tat / n);
+}
+
+int main()
+{
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    int bt[n], p[n];
+    printf("Enter the burst time for each process:\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("Process %d: ", i + 1);
+        scanf("%d", &bt[i]);
+        p[i] = i + 1;
+    }
+
+    sjf(n, bt, p);
+
+    return 0;
+}
+
+5.	Worst Fit
+#include <stdio.h>
+
+int main()
+{
+    int i, j, block[10], process[10], n1, n2, max, maxIndex;
+    printf("Enter the number of memory blocks: ");
+    scanf("%d", &n1);
+    for (i = 0; i < n1; i++)
+    {
+        printf("Enter memory block %d: ", i + 1);
+        scanf("%d", &block[i]);
+    }
+    printf("Enter the number of processes: ");
+    scanf("%d", &n2);
+    for (i = 0; i < n2; i++)
+    {
+        printf("Enter the memory required by process %d: ", i + 1);
+        scanf("%d", &process[i]);
+    }
+    printf("Process\tProcess Size\tMemory Block\n");
+    for (i = 0; i < n2; i++)
+    {
+        max = -1;
+        for (j = 0; j < n1; j++)
+        {
+            if (process[i] <= block[j] && (max == -1 || block[j] - process[i] > max))
+            {
+                max = block[j] - process[i];
+                maxIndex = j;
+            }
+        }
+        if (max != -1)
+        {
+            block[maxIndex] -= process[i];
+            printf("%d\t\t%d\t\t%d\n", i + 1, process[i], maxIndex + 1);
+        }
+        else
+        {
+            printf("%d\t\t%d\t\tNot allocated\n", i + 1, process[i]);
+        }
+    }
+    return 0;
+}
+
+
+
+6.	Optimal Page Replacement
+#include <stdio.h>
+
+int predict(int page[], int pg[], int pn, int index)
+{
+    int res = -1, farthest = index;
+    for (int i = 0; i < 3; i++)
+    {
+        int j;
+        for (j = index; j < pn; j++)
+        {
+            if (page[i] == pg[j])
+            {
+                if (j > farthest)
+                {
+                    farthest = j;
+                    res = i;
+                }
+                break;
+            }
+        }
+        if (j == pn)
+            return i;
+    }
+    return (res == -1) ? 0 : res;
+}
+
+int main()
+{
+    int page[3] = {-1, -1, -1}, hit = 0, i, j;
+    int input[] = {0, 2, 1, 6, 4, 0, 1, 0, 3, 1, 2, 1};
+    int pn = sizeof(input) / sizeof(input[0]);
+    printf("String\tFrame 1\tFrame 2\tFrame 3\tresult\n");
+    for (i = 0; i < pn; i++)
+    {
+        int check = 0;
+        for (j = 0; j < 3; j++)
+        {
+            if (page[j] == input[i])
+            {
+                hit++;
+                check = 1;
+                break;
+            }
+        }
+        if (check == 0)
+        {
+            int j = predict(page, input, pn, i + 1);
+            page[j] = input[i];
+        }
+        printf("%d\t\t%d\t\t%d\t\t%d\t\t%s\n", input[i], page[0], page[1], page[2], check ? "Hit" : "Miss");
+    }
+    printf("The total number of hits is %d", hit);
+    return 0;
+}
+
+
+
+7.	FCFS Disk Scheduling
+
+#include <stdio.h>
+
+int main()
+{
+    int track[10], n, i, init, endt, res = 0;
+    printf("Enter number of tracks to be visited: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++)
+    {
+        printf("Enter track to be visited in order %d: ", i + 1);
+        scanf("%d", &track[i]);
+    }
+    printf("Enter initial track: ");
+    scanf("%d", &init);
+    printf("Enter the track limit: ");
+    scanf("%d", &endt);
+    for (i = 0; i < n; i++)
+    {
+        if (init > track[i])
+        {
+            res += (init - track[i]);
+            init = track[i];
+        }
+        else
+        {
+            res += (track[i] - init);
+            init = track[i];
+        }
+    }
+    printf("The total disk movements is %d tracks", res);
+    return 0;
+}
